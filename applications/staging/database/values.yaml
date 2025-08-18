@@ -1,0 +1,28 @@
+# Staging environment values for database
+image:
+  repository: postgres
+  tag: "15-alpine"
+
+service:
+  type: ClusterIP
+  port: 5432
+
+persistence:
+  enabled: true
+  accessMode: ReadWriteOnce
+  size: 5Gi  # Smaller size for staging
+  storageClass: "standard"
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 1Gi
+  requests:
+    cpu: 50m
+    memory: 128Mi
+
+# Staging-specific database configuration
+postgresql:
+  database: "backend_api_staging"
+  username: "backend-api"
+  password: "staging-password"  # Should be managed via secrets in real deployment

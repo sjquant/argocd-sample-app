@@ -1,0 +1,57 @@
+# Production environment values for frontend
+replicaCount: 3
+
+image:
+  repository: nginx
+  tag: "1.21"
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: "gce"
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "frontend-prod-ip"
+    networking.gke.io/managed-certificates: "frontend-prod-cert"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: frontend.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+# Production-specific environment variables
+env:
+  NODE_ENV: production
+  API_URL: http://backend-api:3000
+  DEBUG: "false"
+
+# Production-specific pod disruption budget and affinity rules
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 100
+      podAffinityTerm:
+        labelSelector:
+          matchExpressions:
+          - key: app.kubernetes.io/name
+            operator: In
+            values:
+            - frontend
+        topologyKey: kubernetes.io/hostname

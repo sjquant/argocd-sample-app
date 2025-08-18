@@ -1,0 +1,36 @@
+# Staging environment values for frontend
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: "1.21"
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: "gce"
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "frontend-staging-ip"
+    networking.gke.io/managed-certificates: "frontend-staging-cert"
+  hosts:
+    - host: frontend-staging.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+# Staging-specific environment variables
+env:
+  NODE_ENV: staging
+  API_URL: http://backend-api:3000
+  DEBUG: "true"

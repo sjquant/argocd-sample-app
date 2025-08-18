@@ -1,0 +1,47 @@
+# Production environment values for backend-api
+replicaCount: 5
+
+image:
+  repository: node
+  tag: "18-alpine"
+
+service:
+  type: ClusterIP
+  port: 3000
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 15
+  targetCPUUtilizationPercentage: 60
+
+# Production-specific environment variables
+env:
+  NODE_ENV: production
+  PORT: "3000"
+  DATABASE_URL: postgresql://backend-api:production-password@database:5432/backend_api_prod
+  REDIS_URL: redis://redis:6379
+  JWT_SECRET: production-jwt-secret-change-me
+  LOG_LEVEL: info
+
+# Production-specific pod disruption budget and affinity rules
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 100
+      podAffinityTerm:
+        labelSelector:
+          matchExpressions:
+          - key: app.kubernetes.io/name
+            operator: In
+            values:
+            - backend-api
+        topologyKey: kubernetes.io/hostname

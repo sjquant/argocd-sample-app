@@ -1,0 +1,39 @@
+# Production environment values for database
+image:
+  repository: postgres
+  tag: "15-alpine"
+
+service:
+  type: ClusterIP
+  port: 5432
+
+persistence:
+  enabled: true
+  accessMode: ReadWriteOnce
+  size: 100Gi  # Larger size for production
+  storageClass: "ssd"
+
+resources:
+  limits:
+    cpu: 2000m
+    memory: 4Gi
+  requests:
+    cpu: 500m
+    memory: 1Gi
+
+# Production-specific database configuration
+postgresql:
+  database: "backend_api_prod"
+  username: "backend-api"
+  password: "production-password"  # Should be managed via secrets in real deployment
+
+# Production-specific node affinity to ensure database runs on appropriate nodes
+nodeSelector:
+  node-type: "database"
+
+# Backup and monitoring considerations for production
+tolerations:
+- key: "database"
+  operator: "Equal"
+  value: "true"
+  effect: "NoSchedule"
