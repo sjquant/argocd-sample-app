@@ -2,8 +2,8 @@
 replicaCount: 5
 
 image:
-  repository: node
-  tag: "18-alpine"
+  repository: "nginxdemos/hello"
+  tag: latest
 
 service:
   type: ClusterIP
