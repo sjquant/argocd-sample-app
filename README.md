@@ -1,6 +1,6 @@
-# AlphaSquare Infrastructure GitOps Repository
+# Argocd GitOps Repository
 
-This repository contains the GitOps configuration for AlphaSquare applications using Argo CD ApplicationSets with a multi-source pattern.
+This repository contains the GitOps configuration for applications using Argo CD ApplicationSets with a multi-source pattern.
 
 ## Repository Structure
 
